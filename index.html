@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <button onclick="changeView('view-categories')" class="group relative px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full font-bold text-lg hover:shadow-[0_0_20px_rgba(168,85,247,0.6)] transition-all hover:-translate-y-1">
+            <button onclick="changeView('view-categories')" class="group relative px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full font-bold text-lg hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all overflow-hidden">
                 <span class="relative z-10 text-white">Mulai Belanja</span>
             </button>
         </div>
@@ -75,7 +75,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
                 <!-- Tombol Ranks -->
-                <button onclick="changeView('view-ranks')" class="glass-card flex flex-col items-center justify-center p-10 rounded-2xl border-2 border-transparent hover:border-purple-500 transition-all hover:bg-slate-800 cursor-pointer group">
+                <button onclick="changeView('view-ranks')" class="glass-card flex flex-col items-center justify-center p-10 rounded-2xl border-2 border-transparent hover:border-purple-500 transition-all group">
                     <span class="text-5xl mb-4 group-hover:scale-110 transition-transform">💎</span>
                     <h3 class="text-2xl font-bold text-white">Ranks</h3>
                     <p class="text-gray-400 text-sm mt-2">Beli rank eksklusif</p>
@@ -203,7 +203,7 @@
                     </div>
 
                     <div class="mb-6 text-xs text-gray-400 leading-relaxed bg-slate-800/50 p-3 rounded border border-slate-700/50">
-                        <span class="text-white font-semibold">Informasi:</span> Jika sudah di transfer silakan pencet konfirmasi dan kirim bukti pembayaran nya. Jika mau tanya-tanya dahulu, pencet konfirmasi saja.
+                        <span class="text-white font-semibold">Informasi:</span> Jika sudah di transfer silakan pencet konfirmasi dan kirim bukti pembayaran nya. Jika mau tanya-tanya dahulu, pencet konfirmasi maka akan masuk chat WhatsApp Owner.
                     </div>
 
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-all hover:scale-[1.02]">
@@ -237,6 +237,7 @@
                     Cek Lagi
                 </button>
                 <button onclick="proceedToWhatsApp()" class="w-1/2 bg-green-500 hover:bg-green-400 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-colors flex justify-center items-center gap-2">
+                    <span>✓</span>
                     <span>Benar</span>
                 </button>
             </div>
@@ -306,7 +307,7 @@
                 
                 card.innerHTML = `
                     <div class="h-40 w-full bg-slate-900 flex items-center justify-center p-4 border-b border-slate-700/50">
-                        <img src="${imgSrc}" alt="${rank.name}" class="h-full object-contain drop-shadow-2xl" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzQ3NTU2OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMSAxNXY0YTIgMiAwIDAgMS0yIDJIMTVsLTQtNGgtNEExIDEgMCAwIDEgMyAxOFY1YTIgMiAwIDAgMSAyLTJoMTRhMiAyIDAgMCAxIDIgMnYxMCIvPjwvc3ZnPg=='; this.className='h-16 opacity-50'">
+                        <img src="${imgSrc}" alt="${rank.name}" class="h-full object-contain drop-shadow-2xl" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMy9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4Ij48cmVjdCBmaWxsPSIjMzM0MTU1IiB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjY0IiB5PSI2NCIgZm9udC1zaXplPSIzMiIgZmlsbD0iI3c4ZmFmYiIgZm9udC1mYW1pbHk9IkFyaWFsIj7imI88L3RleHQ+PC9zdmc+'" />
                     </div>
                     
                     <div class="p-5 flex-grow flex flex-col justify-between">
@@ -323,7 +324,7 @@
                             </div>
                         </div>
                         
-                        <button onclick="goToCheckout('${rank.name}', '${finalPriceFormatted}')" class="w-full mt-4 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition-colors border border-purple-400">
+                        <button onclick="goToCheckout('${rank.name}', '${finalPriceFormatted}')" class="w-full mt-4 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg transition-all hover:scale-105">
                             Beli Sekarang
                         </button>
                     </div>
@@ -402,7 +403,7 @@
             closeModal();
 
             // Susun template pesan
-            const pesan = `Halo Admin Zenovia SMP, saya ingin memproses pesanan saya.\n\n*DATA PEMBELIAN:*\n🔹 *Rank:* ${currentOrder.rankName}\n🔹 *Harga:* ${currentOrder.rankPrice}\n🔹 *Platform:* ${currentOrder.platform}\n🔹 *Gamertag:* ${currentOrder.gamertag}\n\nSaya sudah mentransfer/ingin bertanya mengenai pembayaran. Mohon dibantu pengecekannya. Terima kasih!`;
+            const pesan = `Halo Admin Zenovia SMP, saya ingin memproses pesanan saya.\n\n*DATA PEMBELIAN:*\n🔹 *Rank:* ${currentOrder.rankName}\n🔹 *Harga:* ${currentOrder.rankPrice}\n🔹 *Platform:* ${currentOrder.platform}\n🔹 *Gamertag:* ${currentOrder.gamertag}\n\nMohon tunggu balasannya ya! 🙏`;
 
             // Ubah teks menjadi format link URL
             const pesanEncoded = encodeURIComponent(pesan);
