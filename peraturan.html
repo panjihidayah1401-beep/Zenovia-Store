@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#030407">
+    <title>Zenovia SMP - Peraturan & Staff</title>
+    
+    <!-- Fonts Premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. CORE ENGINE VARIABLES
+        ========================================= */
+        :root {
+            --bg-base: #030407;
+            --bg-card: rgba(13, 17, 26, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.05);
+            
+            --text-main: #FFFFFF;
+            --text-muted: #8E9BAE;
+            
+            --accent-fire: #FF4500;
+            --accent-gold: #FFD700;
+            --rank-admin: #FF3366;
+            --rank-mod: #00E676;
+            --rank-helper: #00F0FF;
+            
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            /* Animasi 10: Smooth Parallax Background Dasar */
+            background-image: radial-gradient(circle at 50% 0%, rgba(255, 69, 0, 0.1), transparent 60%);
+        }
+
+        /* HARDWARE ACCELERATION CLASS UNTUK 60FPS */
+        .hw-accel {
+            transform: translateZ(0);
+            will-change: transform, opacity;
+        }
+
+        h1, h2, h3, .gaming-font {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           2. NAVBAR
+        ========================================= */
+        .navbar {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(3, 4, 7, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .btn-back {
+            color: var(--text-main); text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 500; padding: 8px 15px; border-radius: 8px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass);
+            transition: all 0.3s;
+        }
+        .btn-back:hover { background: var(--border-glass); color: var(--accent-gold); }
+
+        /* =========================================
+           3. HERO AREA (TEMPAT PEDANG & PERCIKAN)
+        ========================================= */
+        .hero-section {
+            position: relative; width: 100%; height: 45vh; min-height: 350px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden; border-bottom: 1px solid rgba(255, 69, 0, 0.2);
+            padding-top: 60px; /* Offset navbar */
+        }
+
+        /* Canvas Penampung Animasi Partikel Api */
+        #spark-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Kontainer Pedang */
+        .sword-container {
+            position: relative; width: 300px; height: 150px; z-index: 2;
+            display: flex; justify-content: center; align-items: flex-end;
+        }
+
+        /* Desain Pedang SVG */
+        .sword {
+            position: absolute; width: 120px; bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+            transform-origin: bottom center; /* Titik putar di gagang */
+        }
+        
+        .sword-left { left: 20px; transform: rotate(-45deg); }
+        .sword-right { right: 20px; transform: rotate(45deg) scaleX(-1); filter: hue-rotate(180deg) drop-shadow(0 0 10px rgba(0, 240, 255, 0.5)); }
+
+        .hero-title {
+            position: relative; z-index: 3; font-size: 3rem; margin-top: 20px;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.8); letter-spacing: 4px;
+            text-align: center;
+        }
+
+        /* Animasi 3: Getaran Layar saat Impact */
+        @keyframes screenShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-5px, 5px) rotate(-1deg); }
+            40% { transform: translate(5px, -5px) rotate(1deg); }
+            60% { transform: translate(-5px, -5px) rotate(0deg); }
+            80% { transform: translate(5px, 5px) rotate(-1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shake-active { animation: screenShake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* =========================================
+           4. RULES SECTION
+        ========================================= */
+        .container { max-width: 900px; margin: 0 auto; padding: 50px 20px; position: relative; z-index: 5;}
+        
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .section-header h2 { font-size: 2.5rem; color: var(--accent-gold); display: flex; align-items: center; justify-content: center; gap: 15px;}
+        .section-header h2::before, .section-header h2::after { content: ''; height: 2px; width: 40px; background: var(--accent-gold); opacity: 0.5;}
+
+        .rules-wrapper { display: flex; flex-direction: column; gap: 15px; }
+
+        .rule-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            padding: 20px 25px; border-radius: 12px;
+            display: flex; gap: 20px; align-items: flex-start;
+            transition: all 0.4s var(--ease-out);
+            position: relative; overflow: hidden;
+            /* Scroll Reveal Setup */
+            opacity: 0; transform: translateY(30px);
+        }
+
+        .rule-card::before {
+            content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%;
+            background: var(--accent-gold); opacity: 0; transition: 0.3s;
+        }
+
+        .rule-card:hover { transform: translateX(10px) !important; background: rgba(255,255,255,0.03); border-color: rgba(255, 215, 0, 0.3); }
+        .rule-card:hover::before { opacity: 1; }
+
+        .rule-number {
+            font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 700;
+            color: rgba(255, 215, 0, 0.3); line-height: 1; min-width: 30px;
+        }
+
+        .rule-text { font-size: 1rem; line-height: 1.6; color: #E2E8F0; }
+        .rule-text strong { color: var(--accent-fire); font-weight: 600; }
+        
+        /* Animasi 8: Auto Ban Glowing Text */
+        .glow-text-danger {
+            color: #FF3366; font-weight: bold;
+            animation: textPulse 1.5s infinite alternate;
+        }
+        @keyframes textPulse {
+            from { text-shadow: 0 0 5px rgba(255, 51, 102, 0.5); }
+            to { text-shadow: 0 0 15px rgba(255, 51, 102, 1), 0 0 30px rgba(255, 51, 102, 0.8); }
+        }
+
+        /* =========================================
+           5. STAFF SECTION
+        ========================================= */
+        .staff-section { margin-top: 80px; }
+
+        .rank-group { margin-bottom: 50px; }
+        .rank-title {
+            font-size: 1.8rem; margin-bottom: 25px;
+            display: inline-block; padding: 5px 20px; border-radius: 8px;
+            border: 1px solid currentColor; background: rgba(0,0,0,0.5);
+            /* Animasi 9: Floating Badges */
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .rank-owner .rank-title { color: var(--accent-gold); box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+        .rank-admin .rank-title { color: var(--rank-admin); box-shadow: 0 0 15px rgba(255,51,102,0.2); }
+        .rank-mod .rank-title { color: var(--rank-mod); box-shadow: 0 0 15px rgba(0,230,118,0.2); }
+        .rank-helper .rank-title { color: var(--rank-helper); box-shadow: 0 0 15px rgba(0,240,255,0.2); }
+
+        .staff-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;
+        }
+
+        .staff-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 15px; padding: 25px 20px; text-align: center;
+            position: relative; overflow: hidden;
+            /* Scroll Reveal Setup */
+            opacity: 0; transform: translateY(30px) scale(0.95);
+            transition: all 0.5s var(--ease-out);
+        }
+
+        /* Animasi 7: Hover Sweep Light */
+        .staff-card::after {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg) translateY(100%);
+            transition: transform 0.6s ease; pointer-events: none;
+        }
+        .staff-card:hover::after { transform: rotate(45deg) translateY(-100%); }
+        .staff-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-5px) scale(1) !important; }
+
+        .staff-icon {
+            font-size: 2.5rem; margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        .rank-owner .staff-icon { color: var(--accent-gold); }
+        .rank-admin .staff-icon { color: var(--rank-admin); }
+        .rank-mod .staff-icon { color: var(--rank-mod); }
+        .rank-helper .staff-icon { color: var(--rank-helper); }
+
+        .staff-name { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; color: white; }
+        .staff-realname { font-size: 0.95rem; color: var(--text-muted); font-style: italic; }
+        .staff-note { font-size: 0.8rem; color: #FFB74D; margin-top: 10px; background: rgba(255, 183, 77, 0.1); padding: 5px; border-radius: 5px;}
+
+        /* Class Animasi Muncul saat di Scroll */
+        .show-on-scroll { opacity: 1 !important; transform: translateY(0) scale(1) !important; }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar hw-accel">
+        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+        <div class="gaming-font" style="font-size: 1.2rem; letter-spacing: 1px;">INFORMASI SERVER</div>
+        <div style="width: 80px;"></div>
+    </nav>
+
+    <!-- HERO AREA (TEMPAT ANIMASI CANVAS & PEDANG) -->
+    <header class="hero-section" id="hero-area">
+        <!-- Canvas untuk Percikan Api (Sparks) & Embers -->
+        <canvas id="spark-canvas"></canvas>
+
+        <div class="sword-container">
+            <!-- Pedang Kiri -->
+            <svg class="sword sword-left hw-accel" id="sword1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#E2E8F0" d="M141.5 422.6c-13.8 13.8-36.2 13.8-50 0L39.1 370.2c-13.8-13.8-13.8-36.2 0-50L308.2 51.1c11.6-11.6 28.5-16.1 44.5-11.9l94.1 24.6c11.7 3.1 20.6 12 23.7 23.7l24.6 94.1c4.2 16-.3 32.9-11.9 44.5L141.5 422.6z"/>
+                <path fill="#FFD700" d="M129 369l-49.5 49.5c-6.2 6.2-16.4 6.2-22.6 0l-28.3-28.3c-6.2-6.2-6.2-16.4 0-22.6L78.1 318c6.2-6.2 16.4-6.2 22.6 0l28.3 28.3c6.2 6.2 6.2 16.4 0 22.6z"/>
+                <path fill="#8E9BAE" d="M342.6 63.4L116.3 289.8l105.9 105.9L448.6 169.4c7.8-7.8 10.9-19 8-29.8L436 61.2c-2.1-8-8.2-14.1-16.2-16.2l-78.4-20.6c-10.8-2.9-22 .2-29.8 8z"/>
+            </svg>
+            <!-- Pedang Kanan (Di-flip via CSS) -->
+            <svg class="sword sword-right hw-accel" id="sword2" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#E2E8F0" d="M141.5 422.6c-13.8 13.8-36.2 13.8-50 0L39.1 370.2c-13.8-13.8-13.8-36.2 0-50L308.2 51.1c11.6-11.6 28.5-16.1 44.5-11.9l94.1 24.6c11.7 3.1 20.6 12 23.7 23.7l24.6 94.1c4.2 16-.3 32.9-11.9 44.5L141.5 422.6z"/>
+                <path fill="#FFD700" d="M129 369l-49.5 49.5c-6.2 6.2-16.4 6.2-22.6 0l-28.3-28.3c-6.2-6.2-6.2-16.4 0-22.6L78.1 318c6.2-6.2 16.4-6.2 22.6 0l28.3 28.3c6.2 6.2 6.2 16.4 0 22.6z"/>
+                <path fill="#8E9BAE" d="M342.6 63.4L116.3 289.8l105.9 105.9L448.6 169.4c7.8-7.8 10.9-19 8-29.8L436 61.2c-2.1-8-8.2-14.1-16.2-16.2l-78.4-20.6c-10.8-2.9-22 .2-29.8 8z"/>
+            </svg>
+        </div>
+
+        <h1 class="hero-title gaming-font" id="decode-title">PERATURAN GRUP</h1>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="container">
+        
+        <!-- BAGIAN RULES -->
+        <section class="rules-section">
+            <div class="section-header">
+                <h2 class="gaming-font"><i class="fas fa-scroll"></i> RULE & HUKUM</h2>
+            </div>
+            
+            <div class="rules-wrapper">
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">01</div>
+                    <div class="rule-text">Dilarang <strong>spam chat</strong>, stiker, atau sebar link nggak jelas.</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">02</div>
+                    <div class="rule-text">Jaga ketikan ya, dilarang rasis, toxic berlebihan, atau bawa-bawa unsur <strong>SARA</strong>.</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">03</div>
+                    <div class="rule-text">Saling menghargai sesama player dan staff. Kalau ada masalah selesaikan baik-baik.</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">04</div>
+                    <div class="rule-text">Boleh ngobrol santai, tapi jangan bahas hal sensitif atau jualan di grup.</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">05</div>
+                    <div class="rule-text">Jangan suka kacangin orang. Mari bersosialisasi!</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">06</div>
+                    <div class="rule-text">Dilarang keras pakai cheat, hack client, atau x-ray. <br><span class="glow-text-danger">(Ketahuan = Auto Ban Permanent)</span></div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">07</div>
+                    <div class="rule-text"><strong>No Griefing!</strong> Menghancurkan build orang lain tanpa izin sangat dilarang.</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">08</div>
+                    <div class="rule-text">Dilarang eksploitasi <strong>bug/glitch</strong> server buat keuntungan pribadi. Segera lapor staff jika menemukan bug.</div>
+                </div>
+                <div class="rule-card scroll-item">
+                    <div class="rule-number">09</div>
+                    <div class="rule-text"><strong>No bucin</strong> di Grup. Jaga kenyamanan ruang publik bersama.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BAGIAN STAFF -->
+        <section class="staff-section">
+            <div class="section-header" style="margin-bottom: 60px;">
+                <div style="font-size: 2rem; color: var(--accent-gold); margin-bottom: 10px;">ᯓ★</div>
+                <h2 class="gaming-font"><i class="fas fa-crown"></i> JAJARAN STAFF ZENOVIA SMP</h2>
+                <div style="font-size: 2rem; color: var(--accent-gold); margin-top: 10px;">ᯓ★</div>
+            </div>
+
+            <!-- Rank: OWNER -->
+            <div class="rank-group rank-owner">
+                <div class="rank-title gaming-font"><i class="fas fa-star"></i> OWNERS</div>
+                <div class="staff-grid">
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-user-shield staff-icon"></i>
+                        <div class="staff-name">GamersMisco</div>
+                        <div class="staff-realname">(Panji)</div>
+                    </div>
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-user-shield staff-icon"></i>
+                        <div class="staff-name">KelemugMC</div>
+                        <div class="staff-realname">(Manuk)</div>
+                        <div class="staff-note">Owner yang on di grup & ngurus panel doang (Kaga main MC)</div>
+                    </div>
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-user-shield staff-icon"></i>
+                        <div class="staff-name">CreeperArtworks</div>
+                        <div class="staff-realname">(Migdad)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rank: ADMIN -->
+            <div class="rank-group rank-admin">
+                <div class="rank-title gaming-font"><i class="fas fa-shield-alt"></i> ADMINISTRATORS</div>
+                <div class="staff-grid">
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-chess-knight staff-icon"></i>
+                        <div class="staff-name">Gumsy</div>
+                        <div class="staff-realname">(Hazelll)</div>
+                    </div>
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-chess-knight staff-icon"></i>
+                        <div class="staff-name">MasK3ntangID</div>
+                        <div class="staff-realname">(Faris)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rank: MODERATOR -->
+            <div class="rank-group rank-mod">
+                <div class="rank-title gaming-font"><i class="fas fa-gavel"></i> MODERATORS</div>
+                <div class="staff-grid">
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-eye staff-icon"></i>
+                        <div class="staff-name">Flimsy</div>
+                        <div class="staff-realname">(Keya)</div>
+                    </div>
+                    <!-- Ruang kosong disediakan sesuai permintaan -->
+                    <div class="staff-card scroll-item" style="border-style: dashed; opacity: 0.5;">
+                        <i class="fas fa-user-plus staff-icon" style="color: var(--text-muted);"></i>
+                        <div class="staff-name" style="color: var(--text-muted);">Slot Kosong</div>
+                        <div class="staff-realname">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rank: HELPER -->
+            <div class="rank-group rank-helper">
+                <div class="rank-title gaming-font"><i class="fas fa-hands-helping"></i> HELPERS</div>
+                <div class="staff-grid">
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-user-check staff-icon"></i>
+                        <div class="staff-name">ZALDY3217</div>
+                        <div class="staff-realname">(Zaldy)</div>
+                    </div>
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-user-check staff-icon"></i>
+                        <div class="staff-name">KrozFamz</div>
+                        <div class="staff-realname">(Dika Pratama)</div>
+                    </div>
+                    <div class="staff-card scroll-item">
+                        <i class="fas fa-user-check staff-icon"></i>
+                        <div class="staff-name">izzul5754</div>
+                        <div class="staff-realname">(Shafiq Muafa)</div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+    </main>
+
+    <!-- =========================================
+         CUSTOM JAVASCRIPT ENGINE (ANIMASI SUPER SMOOTH)
+    ========================================= -->
+    <script>
+        // ---------------------------------------------------------
+        // ENGINE 1: SWORD CLASH & PARTICLE SYSTEM (C++ Style Loop)
+        // ---------------------------------------------------------
+        const canvas = document.getElementById('spark-canvas');
+        const ctx = canvas.getContext('2d');
+        const sword1 = document.getElementById('sword1');
+        const sword2 = document.getElementById('sword2');
+        const heroArea = document.getElementById('hero-area');
+
+        let width, height;
+        let particles = [];
+        let embers = []; // Partikel background yang melayang lambat
+
+        // Variabel Status Pedang
+        let angle1 = -55; // Posisi awal pedang kiri (terbuka)
+        let angle2 = 55;  // Posisi awal pedang kanan (terbuka)
+        let isStriking = false;
+        let clashCooldown = 0;
+
+        function resizeCanvas() {
+            width = canvas.width = heroArea.clientWidth;
+            height = canvas.height = heroArea.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Object Class Partikel Percikan Api (Fisika Sederhana)
+        class Spark {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                // Ledakan acak ke segala arah
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 8 + 4; // Kecepatan tinggi saat meledak
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.life = 1.0; // Umur partikel
+                this.decay = Math.random() * 0.02 + 0.02; // Kecepatan memudar
+                this.size = Math.random() * 3 + 1;
+                this.color = Math.random() > 0.5 ? '#FF4500' : '#FFD700'; // Orange atau Emas
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.2; // Gravitasi menarik ke bawah
+                this.vx *= 0.95; // Gesekan udara (melambat)
+                this.life -= this.decay;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${this.color === '#FF4500' ? '255,69,0' : '255,215,0'}, ${this.life})`;
+                ctx.fill();
+            }
+        }
+
+        // Object Class Embers (Bara api background)
+        class Ember {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 100;
+                this.size = Math.random() * 2;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = -(Math.random() * 1 + 0.5);
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.y < -10) {
+                    this.y = height + 10;
+                    this.x = Math.random() * width;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 69, 0, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        // Buat Embers awal
+        for(let i=0; i<30; i++) embers.push(new Ember());
+
+        // Fungsi memicu ledakan partikel
+        function createExplosion() {
+            // Titik tengah layar bawah (tempat pedang bertabrakan)
+            const clashX = width / 2;
+            const clashY = height - 50; 
+            for(let i=0; i<40; i++) {
+                particles.push(new Spark(clashX, clashY));
+            }
+            
+            // Animasi 3: Screen Shake
+            heroArea.classList.add('shake-active');
+            setTimeout(() => heroArea.classList.remove('shake-active'), 300);
+        }
+
+        // GAME LOOP UTAMA (Berjalan 60fps)
+        function animationLoop() {
+            // Bersihkan frame sebelumnya
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Update Background Embers
+            embers.forEach(ember => { ember.update(); ember.draw(); });
+
+            // 2. Logika Ayunan Pedang (Math Interpolation)
+            if (clashCooldown <= 0) {
+                // Mulai Menyerang (Mendekat ke 0 derajat)
+                isStriking = true;
+                angle1 += (15 - angle1) * 0.2; // Kecepatan ayunan
+                angle2 -= (15 - angle2) * 0.2;
+                
+                // Jika sudah bertabrakan
+                if (angle1 >= 10) {
+                    createExplosion();
+                    clashCooldown = 150; // Jeda sebelum mengayun lagi (dalam frame, ~2.5 detik)
+                    isStriking = false;
+                }
+            } else {
+                // Menarik Pedang ke Belakang (Mundur perlahan ke -55 / 55)
+                clashCooldown--;
+                angle1 += (-55 - angle1) * 0.05;
+                angle2 += (55 - angle2) * 0.05;
+            }
+
+            // Terapkan rotasi ke elemen SVG CSS
+            sword1.style.transform = `rotate(${angle1}deg)`;
+            sword2.style.transform = `scaleX(-1) rotate(${angle2}deg)`;
+
+            // 3. Update & Gambar Partikel Ledakan
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.update();
+                p.draw();
+                if (p.life <= 0) particles.splice(i, 1); // Hapus jika mati
+            }
+
+            // Panggil loop selanjutnya
+            requestAnimationFrame(animationLoop);
+        }
+        
+        // Mulai Engine
+        requestAnimationFrame(animationLoop);
+
+
+        // ---------------------------------------------------------
+        // ENGINE 2: SCROLL REVEAL (Intersection Observer)
+        // ---------------------------------------------------------
+        // Animasi 6: Membuat kartu muncul mulus saat layar di-scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.15 // Trigger saat 15% elemen terlihat
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Tambah delay acak sedikit agar munculnya bergantian (stagger)
+                    setTimeout(() => {
+                        entry.target.classList.add('show-on-scroll');
+                    }, Math.random() * 150);
+                    observer.unobserve(entry.target); // Animasi 1x saja
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-item').forEach(el => {
+            observer.observe(el);
+        });
+
+
+        // ---------------------------------------------------------
+        // ENGINE 3: CYBER DECODE TEXT REVEAL
+        // ---------------------------------------------------------
+        // Animasi 5: Judul muncul seperti di-hack / di-decode
+        const titleElement = document.getElementById('decode-title');
+        const finalTitle = "PERATURAN GRUP";
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        
+        let decodeInterval;
+        let iteration = 0;
+
+        // Beri jeda sedikit setelah loading sebelum mulai
+        setTimeout(() => {
+            decodeInterval = setInterval(() => {
+                titleElement.innerText = finalTitle
+                    .split("")
+                    .map((letter, index) => {
+                        if(index < iteration) return finalTitle[index];
+                        return letters[Math.floor(Math.random() * letters.length)];
+                    })
+                    .join("");
+                
+                if(iteration >= finalTitle.length) { 
+                    clearInterval(decodeInterval); 
+                }
+                iteration += 1 / 3; // Kecepatan efek (makin kecil makin lambat)
+            }, 30);
+        }, 500);
+
+    </script>
+</body>
+  </html>
