@@ -1,0 +1,631 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#05070A">
+    <title>Zenovia SMP - Official Store</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. CORE VARIABLES & SETUP
+        ========================================= */
+        :root {
+            --bg-dark: #05070A;
+            --bg-card: #0D111A;
+            --border-color: #1F2937;
+            
+            --text-main: #FFFFFF;
+            --text-muted: #8E9BAE;
+            
+            --neon-blue: #00F0FF;
+            --neon-gold: #FFD700;
+            --danger: #FF3366;
+            --success: #00E676;
+            
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Latar belakang grid futuristik */
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, h3, .gaming-font {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           2. NAVBAR & HEADER
+        ========================================= */
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .btn-back {
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 500; font-size: 1rem;
+            padding: 8px 15px; border-radius: 8px;
+            background: #111827; border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        .btn-back:hover { background: var(--border-color); color: var(--neon-blue); }
+
+        .store-title {
+            font-size: 1.5rem; letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--neon-gold));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* =========================================
+           3. VIEW MANAGER (Kategori vs Ranks)
+        ========================================= */
+        .view-section {
+            display: none;
+            opacity: 0;
+            animation: slideUp 0.5s forwards;
+            padding: 40px 20px;
+            max-width: 1200px; margin: 0 auto;
+        }
+        .view-section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            text-align: center; margin-bottom: 40px;
+        }
+        .section-header h2 {
+            font-size: 2.5rem; color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            margin-bottom: 10px;
+        }
+
+        /* =========================================
+           4. CATEGORY CARDS (Futuristic UI)
+        ========================================= */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .cat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0 20px 0 20px; /* Sudut asimetris ala Cyberpunk */
+            padding: 40px 20px; text-align: center;
+            cursor: pointer; position: relative;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .cat-card::before {
+            content: ''; position: absolute;
+            top: 0; left: -100%; width: 100%; height: 3px;
+            background: var(--neon-blue); transition: left 0.4s ease;
+        }
+
+        .cat-card:hover:not(.locked)::before { left: 0; }
+        .cat-card:hover:not(.locked) {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.1);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .cat-icon { font-size: 3.5rem; margin-bottom: 15px; color: var(--text-main); }
+        .cat-card:hover:not(.locked) .cat-icon { color: var(--neon-blue); }
+
+        /* Status Terkunci / Coming Soon */
+        .cat-card.locked {
+            opacity: 0.6; cursor: not-allowed;
+            border-color: #1a1a1a; background: #0a0a0a;
+        }
+        .badge-locked {
+            background: var(--danger); color: white;
+            padding: 5px 15px; border-radius: 4px;
+            font-size: 0.8rem; font-weight: bold;
+            display: inline-block; margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* =========================================
+           5. RANKS STORE UI
+        ========================================= */
+        .friday-alert {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid var(--neon-gold);
+            padding: 15px 20px; margin-bottom: 30px;
+            border-radius: 0 8px 8px 0;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .friday-alert i { color: var(--neon-gold); font-size: 1.5rem; animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .rank-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; transition: var(--transition);
+        }
+
+        .rank-card:hover {
+            border-color: var(--neon-gold);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .rank-img-wrapper {
+            width: 120px; height: 120px;
+            background: #05070A; border-radius: 10px;
+            padding: 10px; margin-bottom: 15px;
+            border: 1px dashed var(--border-color);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .rank-img { width: 100%; height: 100%; object-fit: contain; }
+
+        .rank-name {
+            font-size: 1.5rem; color: var(--neon-gold); margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .price-box { text-align: center; min-height: 60px; margin-bottom: 15px; }
+        .price-normal { font-size: 1.1rem; color: var(--text-muted); }
+        .price-discount { font-size: 1.5rem; font-weight: 700; color: var(--success); display: none; }
+
+        /* Mode Diskon Jumat */
+        .is-friday .price-normal { text-decoration: line-through; color: var(--danger); font-size: 0.9rem; }
+        .is-friday .price-discount { display: block; }
+
+        .btn-buy {
+            width: 100%; padding: 12px; background: transparent;
+            border: 1px solid var(--neon-blue); color: var(--neon-blue);
+            font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; font-weight: bold;
+            border-radius: 6px; cursor: pointer; transition: var(--transition);
+        }
+        .btn-buy:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
+
+        /* Peringatan Owner */
+        .emergency-contact {
+            margin-top: 50px; background: #111827;
+            border: 1px dashed var(--danger); border-radius: 10px;
+            padding: 20px; text-align: center; line-height: 1.6;
+        }
+        .emergency-contact span { color: var(--neon-gold); font-weight: bold; }
+
+        /* =========================================
+           6. CHECKOUT MODAL UI
+        ========================================= */
+        .modal-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-bg.show { display: flex; opacity: 1; }
+
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            width: 90%; max-width: 450px; border-radius: 15px;
+            padding: 30px 20px; position: relative;
+            transform: scale(0.9); transition: transform 0.3s;
+        }
+        .modal-bg.show .modal-box { transform: scale(1); }
+
+        .btn-close-modal {
+            position: absolute; top: 15px; right: 15px;
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.5rem; cursor: pointer;
+        }
+
+        /* RPG Quest Progress Bar */
+        .quest-tracker { display: flex; justify-content: space-between; margin-bottom: 25px; position: relative; padding: 0 15px; }
+        .quest-tracker::before {
+            content: ''; position: absolute; top: 50%; left: 15px; right: 15px; height: 2px;
+            background: var(--border-color); z-index: 1;
+        }
+        .quest-step {
+            width: 30px; height: 30px; border-radius: 50%; background: var(--bg-dark);
+            border: 2px solid var(--border-color); z-index: 2;
+            display: flex; justify-content: center; align-items: center; font-size: 0.9rem;
+        }
+        .quest-step.active { border-color: var(--neon-blue); color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+        .quest-step.done { background: var(--neon-blue); color: #000; border-color: var(--neon-blue); }
+
+        .modal-step-content { display: none; }
+        .modal-step-content.active { display: block; animation: slideUp 0.3s; }
+
+        .step-title { text-align: center; color: var(--neon-gold); margin-bottom: 20px; }
+
+        /* Pilihan Edisi */
+        .edition-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .btn-edition {
+            background: #05070A; border: 1px solid var(--border-color);
+            padding: 20px 10px; border-radius: 10px; color: white; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .btn-edition i { font-size: 2rem; }
+        .btn-edition.selected { border-color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); }
+
+        /* Form Input */
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 8px; font-size: 0.9rem; }
+        .input-text {
+            width: 100%; padding: 12px 15px; background: #05070A; color: white;
+            border: 1px solid var(--border-color); border-radius: 8px; outline: none;
+        }
+        .input-text:focus { border-color: var(--neon-blue); }
+
+        /* Minotar Avatar Preview */
+        .avatar-box { margin-top: 15px; text-align: center; min-height: 80px; }
+        .avatar-img { width: 64px; height: 64px; border-radius: 8px; image-rendering: pixelated; display: none; border: 2px solid var(--neon-gold); margin: 0 auto;}
+
+        /* Payment Info */
+        .rekening-box { background: #05070A; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .rek-item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #1a1a1a; padding-bottom: 5px; }
+        .rek-item:last-child { margin-bottom: 0; border: none; padding: 0; }
+        .rek-item span { color: var(--neon-gold); font-weight: bold; }
+
+        .modal-footer { display: flex; justify-content: space-between; margin-top: 25px; gap: 10px;}
+        .btn-action {
+            flex: 1; padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer;
+        }
+        .btn-prev { background: #1F2937; color: white; }
+        .btn-next { background: var(--neon-blue); color: #000; }
+        .btn-next:disabled { background: #1a1a1a; color: #555; cursor: not-allowed; }
+        .btn-confirm { background: var(--success); color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+        <div class="store-title gaming-font">ZENOVIA STORE</div>
+        <div style="width: 80px;"></div> <!-- Spacer untuk menyeimbangkan posisi -->
+    </nav>
+
+    <!-- 2. VIEW: CATEGORIES -->
+    <section id="view-categories" class="view-section active">
+        <div class="section-header">
+            <h2 class="gaming-font">PILIH KATEGORI</h2>
+            <p style="color: var(--text-muted)">Pilih kategori item yang ingin kamu beli</p>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Rank (Bisa di klik) -->
+            <div class="cat-card" onclick="switchView('view-ranks')">
+                <i class="fas fa-crown cat-icon"></i>
+                <h3 class="gaming-font">Ranks</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">Beli rank eksklusif dan dapatkan fitur spesial di dalam game.</p>
+            </div>
+
+            <!-- Items (Terkunci) -->
+            <div class="cat-card locked">
+                <i class="fas fa-sword cat-icon"></i>
+                <h3 class="gaming-font">Items & Gears</h3>
+                <div class="badge-locked">COMING SOON DI SEASON 2</div>
+            </div>
+
+            <!-- Crates (Terkunci) -->
+            <div class="cat-card locked">
+                <i class="fas fa-box-open cat-icon"></i>
+                <h3 class="gaming-font">Gacha Crates</h3>
+                <div class="badge-locked">COMING SOON DI SEASON 2</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. VIEW: RANKS STORE -->
+    <section id="view-ranks" class="view-section">
+        <div class="section-header">
+            <h2 class="gaming-font">RANK STORE</h2>
+        </div>
+
+        <!-- Banner Diskon Jumat -->
+        <div class="friday-alert">
+            <i class="fas fa-bolt"></i>
+            <div>
+                <strong style="color: var(--text-main); display: block; margin-bottom: 5px;">PROMO HARI JUMAT AKTIF!</strong>
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Harga otomatis dipotong. Harga diskon tertera di bawah harga coret.</span>
+            </div>
+        </div>
+
+        <!-- Tempat Injeksi HTML Ranks via JS -->
+        <div id="ranks-container" class="grid-layout"></div>
+
+        <!-- Peringatan Darurat (Berdasarkan file lama) -->
+        <div class="emergency-contact">
+            <i class="fas fa-exclamation-triangle" style="color: var(--danger); font-size: 1.5rem; margin-bottom: 10px;"></i><br>
+            Jika owner pertama lama membalas atau tidak merespon sama sekali, silakan hubungi:<br>
+            Owner Kedua: <span>083132202479</span><br>
+            Owner Ketiga: <span>085861277401</span>
+        </div>
+    </section>
+
+    <!-- 4. MODAL CHECKOUT -->
+    <div id="modal-checkout" class="modal-bg">
+        <div class="modal-box">
+            <button class="btn-close-modal" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            
+            <div class="quest-tracker">
+                <div class="quest-step active" id="step-id-1">1</div>
+                <div class="quest-step" id="step-id-2">2</div>
+                <div class="quest-step" id="step-id-3">3</div>
+            </div>
+
+            <!-- Step 1: Edisi -->
+            <div id="modal-step-1" class="modal-step-content active">
+                <h3 class="step-title gaming-font">Pilih Edisi Game</h3>
+                <div class="edition-grid">
+                    <button class="btn-edition" id="btn-java" onclick="pilihEdisi('Java')">
+                        <i class="fab fa-java"></i> Java Edition
+                    </button>
+                    <button class="btn-edition" id="btn-bedrock" onclick="pilihEdisi('Bedrock')">
+                        <i class="fas fa-mobile-alt"></i> Bedrock Edition
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <div style="flex:1"></div>
+                    <button class="btn-action btn-next" id="btn-next-1" disabled onclick="gantiStep(2)">Lanjut <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Gamertag -->
+            <div id="modal-step-2" class="modal-step-content">
+                <h3 class="step-title gaming-font">Data Pemain</h3>
+                <div class="input-group">
+                    <label>Nickname / Gamertag Minecraft:</label>
+                    <input type="text" id="input-nama" class="input-text" placeholder="Ketik namamu di sini..." autocomplete="off">
+                </div>
+                <div class="avatar-box">
+                    <p id="avatar-loading" style="display:none; font-size:0.8rem; color:var(--neon-gold);"><i class="fas fa-spinner fa-spin"></i> Mencari Wajah...</p>
+                    <img id="avatar-preview" class="avatar-img" src="" alt="Avatar">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-action btn-prev" onclick="gantiStep(1)"><i class="fas fa-arrow-left"></i> Kembali</button>
+                    <button class="btn-action btn-next" id="btn-next-2" disabled onclick="gantiStep(3)">Lanjut <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Pembayaran -->
+            <div id="modal-step-3" class="modal-step-content">
+                <h3 class="step-title gaming-font">Metode Pembayaran</h3>
+                <div class="rekening-box">
+                    <div class="rek-item">SeaBank <span>901342094374</span></div>
+                    <div class="rek-item">DANA <span>085798314873</span></div>
+                    <div class="rek-item">ShopeePay <span>085798314873</span></div>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; font-style: italic; margin-bottom: 20px;">
+                    "Jika sudah ditransfer silakan pencet konfirmasi dan kirim bukti pembayarannya. Jika mau tanya-tanya dahulu pencet konfirmasi saja."
+                </p>
+                <div class="modal-footer">
+                    <button class="btn-action btn-prev" onclick="gantiStep(2)"><i class="fas fa-arrow-left"></i> Kembali</button>
+                    <button class="btn-action btn-confirm" onclick="prosesPesanan()"><i class="fab fa-whatsapp"></i> Konfirmasi WA</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT LOGIC
+    ========================================= -->
+    <script>
+        // 1. Data Akurat dari file index (4).html lama
+        const dataRanks = [
+            { id: 1, name: "Soldier", img: "images/ranks/20260524_110608.jpg", normal: 10000, discount: 7000 },
+            { id: 2, name: "⚔️ Knight", img: "images/ranks/20260524_110908.jpg", normal: 20000, discount: 15000 },
+            { id: 3, name: "🔮 Mage", img: "images/ranks/20260524_110946.jpg", normal: 30000, discount: 25000 },
+            { id: 4, name: "🏹 Captain", img: "images/ranks/20260524_111041.jpg", normal: 40000, discount: 35000 },
+            { id: 5, name: "🏰 Lord", img: "images/ranks/20260524_111116.jpg", normal: 50000, discount: 45000 },
+            { id: 6, name: "🏛️ Duke", img: "images/ranks/20260524_111154.jpg", normal: 60000, discount: 55000 },
+            { id: 7, name: "🐲 Dragon", img: "images/ranks/20260524_111245.jpg", normal: 75000, discount: 70000 },
+            { id: 8, name: "👑 King", img: "images/ranks/20260524_111338.jpg", normal: 85000, discount: 80000 },
+            { id: 9, name: "✨ Emperor ⚜️", img: "images/ranks/20260524_111603.jpg", normal: 100000, discount: 95000 }
+        ];
+
+        // Format Uang Rupiah
+        const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+        // State Pesanan Sementara
+        let pesanan = {
+            rankData: null,
+            edisi: null,
+            gamertag: "",
+            hargaAkhir: 0
+        };
+
+        // 2. Inisialisasi Saat Halaman Dimuat
+        window.onload = () => {
+            renderDaftarRank();
+        };
+
+        // 3. Logika Navigasi Halaman (Kategori <-> Ranks)
+        function switchView(targetId) {
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(targetId).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 4. Render Kartu Rank & Sistem Diskon Jumat
+        function renderDaftarRank() {
+            const wadah = document.getElementById('ranks-container');
+            const cekJumat = new Date().getDay() === 5; // Hari ke-5 adalah Jumat
+            
+            if (cekJumat) {
+                wadah.classList.add('is-friday'); // Otomatis coret harga normal di CSS
+            } else {
+                // Sembunyikan banner jika bukan jumat
+                document.querySelector('.friday-alert').style.display = 'none';
+            }
+
+            dataRanks.forEach(rank => {
+                const card = document.createElement('div');
+                card.className = 'rank-card';
+                
+                // Fallback jika foto rank belum dimasukkan ke folder
+                const fotoPengganti = `https://ui-avatars.com/api/?name=${rank.name.replace(/[^a-zA-Z]/g, '').charAt(0)}&background=0D111A&color=FFD700&size=120`;
+
+                card.innerHTML = `
+                    <div class="rank-img-wrapper">
+                        <img src="${rank.img}" alt="${rank.name}" class="rank-img" onerror="this.src='${fotoPengganti}'">
+                    </div>
+                    <h3 class="rank-name gaming-font">${rank.name}</h3>
+                    <div class="price-box">
+                        <div class="price-normal">${formatRp(rank.normal)}</div>
+                        <div class="price-discount">${formatRp(rank.discount)}</div>
+                    </div>
+                    <button class="btn-buy" onclick="bukaModal(${rank.id}, ${cekJumat})">BELI SEKARANG</button>
+                `;
+                wadah.appendChild(card);
+            });
+        }
+
+        // 5. Logika Modal Checkout
+        function bukaModal(idRank, isFriday) {
+            // Set Data
+            pesanan.rankData = dataRanks.find(r => r.id === idRank);
+            pesanan.hargaAkhir = isFriday ? pesanan.rankData.discount : pesanan.rankData.normal;
+            
+            // Reset Form
+            pesanan.edisi = null;
+            pesanan.gamertag = "";
+            document.getElementById('input-nama').value = "";
+            document.getElementById('avatar-preview').style.display = "none";
+            document.querySelectorAll('.btn-edition').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('btn-next-1').disabled = true;
+            document.getElementById('btn-next-2').disabled = true;
+            
+            gantiStep(1);
+            
+            // Tampilkan Modal
+            const modal = document.getElementById('modal-checkout');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal-checkout');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        // Sistem Ganti Langkah di Modal (Step 1, 2, 3)
+        function gantiStep(stepTarget) {
+            // Sembunyikan konten
+            document.querySelectorAll('.modal-step-content').forEach(el => el.classList.remove('active'));
+            // Tampilkan konten target
+            document.getElementById(`modal-step-${stepTarget}`).classList.add('active');
+            
+            // Atur Indikator Lingkaran Atas
+            document.querySelectorAll('.quest-step').forEach((el, index) => {
+                el.classList.remove('active', 'done');
+                if (index + 1 < stepTarget) el.classList.add('done');
+                if (index + 1 === stepTarget) el.classList.add('active');
+            });
+        }
+
+        // Pemilihan Edisi
+        function pilihEdisi(edisi) {
+            pesanan.edisi = edisi;
+            document.getElementById('btn-java').classList.remove('selected');
+            document.getElementById('btn-bedrock').classList.remove('selected');
+            document.getElementById(`btn-${edisi.toLowerCase()}`).classList.add('selected');
+            
+            document.getElementById('btn-next-1').disabled = false;
+            cekAvatar3D(); // Cek avatar jika dia pindah ke java dan sudah ngetik nama
+        }
+
+        // Deteksi Ketikan Nama & Minotar API
+        let timerKetik;
+        document.getElementById('input-nama').addEventListener('input', function(e) {
+            pesanan.gamertag = e.target.value.trim();
+            document.getElementById('btn-next-2').disabled = pesanan.gamertag.length === 0;
+            cekAvatar3D();
+        });
+
+        function cekAvatar3D() {
+            clearTimeout(timerKetik);
+            const imgAvatar = document.getElementById('avatar-preview');
+            const teksLoading = document.getElementById('avatar-loading');
+            
+            // Avatar Minotar hanya berlaku untuk pemain Java
+            if(pesanan.gamertag.length > 2 && pesanan.edisi === 'Java') {
+                teksLoading.style.display = 'block';
+                imgAvatar.style.display = 'none';
+                
+                timerKetik = setTimeout(() => {
+                    const urlGambar = `https://minotar.net/helm/${pesanan.gamertag}/100.png`;
+                    const tester = new Image();
+                    tester.onload = () => {
+                        imgAvatar.src = urlGambar;
+                        teksLoading.style.display = 'none';
+                        imgAvatar.style.display = 'block';
+                    };
+                    tester.onerror = () => {
+                        teksLoading.style.display = 'none';
+                        imgAvatar.style.display = 'none';
+                    };
+                    tester.src = urlGambar;
+                }, 800); // Tunggu pemain selesai ngetik
+            } else {
+                imgAvatar.style.display = 'none';
+                teksLoading.style.display = 'none';
+            }
+        }
+
+        // 6. Pengiriman ke WhatsApp Owner 1
+        function prosesPesanan() {
+            const noWA = "6285134219945"; // Nomor Owner 1
+            const teksPesan = 
+`Halo Admin Zenovia Store, saya ingin mengkonfirmasi pembayaran:
+
+*Detail Pesanan:*
+- Nama Rank: ${pesanan.rankData.name}
+- Edisi: ${pesanan.edisi}
+- Gamertag: ${pesanan.gamertag}
+- Total Harga: ${formatRp(pesanan.hargaAkhir)}
+
+Saya akan mengirimkan bukti transfer setelah pesan ini. Terima kasih!`;
+            
+            const linkWA = `https://wa.me/${noWA}?text=${encodeURIComponent(teksPesan)}`;
+            window.open(linkWA, '_blank');
+            closeModal();
+        }
+    </script>
+</body>
+</html>
