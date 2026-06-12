@@ -1,0 +1,424 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#05070A">
+    <title>Zenovia SMP - Komunitas & Teams</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. CORE VARIABLES & SETUP
+        ========================================= */
+        :root {
+            --bg-dark: #05070A;
+            --bg-card: #0D111A;
+            --border-color: #1F2937;
+            
+            --text-main: #FFFFFF;
+            --text-muted: #8E9BAE;
+            
+            --neon-blue: #00F0FF;
+            --neon-gold: #FFD700;
+            --neon-purple: #9D00FF; /* Warna khusus Team */
+            --danger: #FF3366;
+            --success: #00E676;
+            --discord: #5865F2;
+            --whatsapp: #25D366;
+            
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            /* Latar Belakang Hexagon Halus */
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(157, 0, 255, 0.05), transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(0, 240, 255, 0.05), transparent 50%);
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, .gaming-font {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* =========================================
+           2. NAVBAR
+        ========================================= */
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .btn-back {
+            color: var(--text-main); text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 500; font-size: 1rem;
+            padding: 8px 15px; border-radius: 8px;
+            background: #111827; border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        .btn-back:hover { background: var(--border-color); color: var(--neon-blue); }
+
+        .page-title {
+            font-size: 1.5rem; letter-spacing: 2px;
+            background: linear-gradient(90deg, #fff, var(--neon-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* =========================================
+           3. MAIN LAYOUT & GLOBAL LINKS
+        ========================================= */
+        .container {
+            max-width: 1000px; margin: 0 auto; padding: 30px 20px 80px;
+        }
+
+        .section-header { text-align: center; margin-bottom: 30px; }
+        .section-header h2 { font-size: 2.5rem; color: var(--text-main); text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+
+        /* Kartu Link Komunitas Global */
+        .global-links-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .social-card {
+            display: flex; align-items: center; gap: 20px;
+            padding: 20px; border-radius: 15px;
+            text-decoration: none; color: white;
+            position: relative; overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .social-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+        }
+        
+        .card-discord { background: rgba(88, 101, 242, 0.1); border-color: rgba(88, 101, 242, 0.3); }
+        .card-discord:hover { background: rgba(88, 101, 242, 0.2); border-color: var(--discord); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(88, 101, 242, 0.2); }
+        .card-discord i { color: var(--discord); }
+
+        .card-wa { background: rgba(37, 211, 102, 0.1); border-color: rgba(37, 211, 102, 0.3); }
+        .card-wa:hover { background: rgba(37, 211, 102, 0.2); border-color: var(--whatsapp); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2); }
+        .card-wa i { color: var(--whatsapp); }
+
+        .social-icon { font-size: 3rem; z-index: 1; }
+        .social-text { z-index: 1; }
+        .social-text h3 { font-size: 1.5rem; margin-bottom: 5px; }
+        .social-text p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* =========================================
+           4. TEAM LIST SECTION
+        ========================================= */
+        .info-alert {
+            background: rgba(0, 240, 255, 0.1);
+            border-left: 4px solid var(--neon-blue);
+            padding: 15px 20px; border-radius: 0 10px 10px 0;
+            margin-bottom: 30px; display: flex; align-items: center; gap: 15px;
+        }
+        .info-alert i { font-size: 1.5rem; color: var(--neon-blue); }
+        .info-alert p { font-size: 0.95rem; line-height: 1.5; }
+        .info-alert span { color: var(--neon-gold); font-weight: bold; }
+
+        .team-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+        }
+
+        .team-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 15px; padding: 25px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            transition: var(--transition); position: relative;
+        }
+        .team-card:hover { border-color: var(--neon-purple); box-shadow: 0 10px 30px rgba(157, 0, 255, 0.15); transform: translateY(-5px); }
+
+        /* Emoji Logo Style */
+        .team-logo {
+            width: 80px; height: 80px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 3rem; margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(157, 0, 255, 0.4), rgba(0,0,0,0.8));
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.4);
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .team-name { font-size: 1.8rem; color: var(--text-main); margin-bottom: 5px; letter-spacing: 1px; }
+        .team-leader { font-size: 1rem; color: var(--text-muted); margin-bottom: 20px; }
+        .team-leader span { color: var(--neon-gold); font-weight: bold; }
+
+        .btn-view {
+            width: 100%; padding: 12px;
+            background: rgba(157, 0, 255, 0.1); border: 1px solid var(--neon-purple);
+            color: var(--text-main); font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: bold;
+            border-radius: 8px; cursor: pointer; transition: var(--transition);
+        }
+        .btn-view:hover { background: var(--neon-purple); box-shadow: 0 0 15px var(--neon-purple); }
+
+        /* =========================================
+           5. TEAM DETAIL OVERLAY (VIRTUAL PAGE)
+        ========================================= */
+        .team-detail-page {
+            position: fixed; top: 0; left: 100%; /* Sembunyi di kanan layar */
+            width: 100%; height: 100%; z-index: 200;
+            background: var(--bg-dark); overflow-y: auto;
+            transition: left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .team-detail-page.active { left: 0; /* Geser masuk ke layar */ }
+
+        .detail-header {
+            position: relative; padding: 60px 20px 40px; text-align: center;
+            background: linear-gradient(to bottom, rgba(157, 0, 255, 0.2), transparent);
+            border-bottom: 1px solid rgba(157, 0, 255, 0.2);
+        }
+        
+        .btn-close-detail {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border-color);
+            color: white; padding: 10px 20px; border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+
+        .detail-logo { width: 100px; height: 100px; font-size: 4rem; margin: 0 auto 20px; }
+
+        .detail-content { max-width: 800px; margin: 0 auto; padding: 30px 20px 80px; }
+
+        .info-box {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 25px; margin-bottom: 20px;
+            position: relative; overflow: hidden;
+        }
+        .info-box::before {
+            content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%;
+            background: var(--neon-purple);
+        }
+
+        .box-title { font-size: 1.2rem; color: var(--neon-purple); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .box-title i { font-size: 1.3rem; }
+        
+        .info-text { font-size: 0.95rem; line-height: 1.6; color: #cbd5e1; }
+        .info-text p { margin-bottom: 10px; }
+        .info-text p:last-child { margin-bottom: 0; }
+        .highlight { color: var(--neon-gold); font-weight: bold; }
+
+        /* List Dekorasi Rules */
+        .rules-list { list-style: none; }
+        .rules-list li {
+            position: relative; padding-left: 25px; margin-bottom: 12px;
+        }
+        .rules-list li::before {
+            content: '🔥'; position: absolute; left: 0; top: 0; font-size: 0.9rem;
+        }
+
+        .btn-join-team {
+            display: block; width: 100%; text-align: center; text-decoration: none;
+            background: linear-gradient(45deg, var(--whatsapp), #128C7E);
+            color: white; font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: bold;
+            padding: 15px; border-radius: 12px; margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3); transition: var(--transition);
+        }
+        .btn-join-team:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 211, 102, 0.5); }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR UTAMA -->
+    <nav class="navbar">
+        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali</a>
+        <div class="page-title gaming-font">KOMUNITAS</div>
+        <div style="width: 80px;"></div>
+    </nav>
+
+    <!-- HALAMAN UTAMA KOMUNITAS -->
+    <main class="container">
+        
+        <div class="section-header">
+            <h2 class="gaming-font">PORTAL KOMUNITAS</h2>
+            <p style="color: var(--text-muted)">Bergabunglah dengan player lain dan dapatkan informasi update terbaru.</p>
+        </div>
+
+        <!-- LINK DISCORD & WA GLOBAL -->
+        <div class="global-links-grid">
+            <a href="https://discord.gg/9ExdJc97W" target="_blank" class="social-card card-discord">
+                <i class="fab fa-discord social-icon"></i>
+                <div class="social-text">
+                    <h3 class="gaming-font">Official Discord</h3>
+                    <p>Voice channel & diskusi</p>
+                </div>
+            </a>
+            <a href="https://chat.whatsapp.com/L8iilRGj7IBAUuJuktetml?s=cl&p=a&ilr=2" target="_blank" class="social-card card-wa">
+                <i class="fab fa-whatsapp social-icon"></i>
+                <div class="social-text">
+                    <h3 class="gaming-font">Grup WhatsApp</h3>
+                    <p>Ngobrol santai bareng player</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="section-header">
+            <h2 class="gaming-font" style="color: var(--neon-purple); text-shadow: 0 0 15px rgba(157,0,255,0.3);">DAFTAR TEAM RESMI</h2>
+        </div>
+
+        <!-- PEMBERITAHUAN BUAT TEAM -->
+        <div class="info-alert">
+            <i class="fas fa-info-circle"></i>
+            <p>Ingin membuat dan mendaftarkan Team kamu di website ini? Silakan hubungi <span>Owner 1 (085134219945)</span> untuk verifikasi pendaftaran.</p>
+        </div>
+
+        <!-- =========================================================================
+             AREA DAFTAR TEAM (TAMBAHKAN KARTU TEAM BARU DI BAWAH SINI)
+        ========================================================================== -->
+        <div class="team-grid">
+            
+            <!-- TEAM 1: XZENOS -->
+            <div class="team-card">
+                <div class="team-logo">😈</div>
+                <h3 class="team-name gaming-font">XZenos</h3>
+                <p class="team-leader">Ketua: <span>.GamersMisco</span></p>
+                <!-- Tombol ini memanggil ID 'detail-xzenos' yang ada di bawah -->
+                <button class="btn-view" onclick="bukaTeam('detail-xzenos')">Lihat Detail Team</button>
+            </div>
+
+            <!-- CARA MENAMBAH TEAM BARU (CONTOH) :
+            Hapus tanda komentar (<!-- dan -->) pada kode di bawah jika ada team baru.
+            Ubah nama, emoji, nama ketua, dan ID pada tombol onclick.
+
+            <!--
+            <div class="team-card">
+                <div class="team-logo" style="background: linear-gradient(135deg, red, black); border-color: red;">🔥</div>
+                <h3 class="team-name gaming-font">NAMA TEAM BARU</h3>
+                <p class="team-leader">Ketua: <span>NamaKetua</span></p>
+                <button class="btn-view" onclick="bukaTeam('detail-teambaru')">Lihat Detail Team</button>
+            </div>
+            -->
+
+        </div>
+    </main>
+
+    <!-- =========================================================================
+         AREA DETAIL TEAM (HALAMAN TERSEMBUNYI)
+         Ini akan muncul dari samping saat tombol "Lihat Detail" diklik
+    ========================================================================== -->
+
+    <!-- DETAIL TEAM 1: XZENOS -->
+    <div id="detail-xzenos" class="team-detail-page">
+        <div class="detail-header">
+            <button class="btn-close-detail" onclick="tutupTeam('detail-xzenos')"><i class="fas fa-arrow-left"></i> Tutup</button>
+            <div class="team-logo detail-logo">😈</div>
+            <h2 class="gaming-font" style="font-size: 3rem; text-shadow: 0 0 20px rgba(157,0,255,0.5);">XZenos</h2>
+            <p style="color: var(--neon-gold); font-size: 1.2rem; margin-top: 10px;">Dipimpin oleh: .GamersMisco</p>
+        </div>
+
+        <div class="detail-content">
+            
+            <!-- Welcome Box -->
+            <div class="info-box" style="text-align: center; border-color: var(--neon-purple); background: rgba(157,0,255,0.05);">
+                <p style="font-size: 1.2rem; margin-bottom: 10px;">🔥 <strong style="color: white;">Welcome! This is XZenos</strong> 🔥</p>
+                <p style="color: var(--text-muted);">Ini adalah grup dan base camp resmi team kita.</p>
+            </div>
+
+            <!-- Koordinat & Akses -->
+            <div class="info-box">
+                <h4 class="box-title gaming-font"><i class="fas fa-map-marker-alt"></i> Lokasi & Akses</h4>
+                <div class="info-text">
+                    <p>📍 Kordinat Land XZenos: <span class="highlight">0 65 (ke atas) 0</span></p>
+                    <p style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; font-style: italic;">
+                        *Catatan: Land ini di-private dan cuma bisa diakses sama anggota team. Kalau kamu udah masuk tapi belum dapet akses, langsung tag/chat ketua team biar langsung dibukain aksesnya.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Benefit Box -->
+            <div class="info-box">
+                <h4 class="box-title gaming-font" style="color: var(--success);"><i class="fas fa-hand-holding-usd"></i> Benefit Member</h4>
+                <div class="info-text">
+                    <p>Tiap minggu bakal ada jatah cair <span style="color: var(--success); font-weight: bold; font-size: 1.1rem;">100.000 Money</span> buat masing-masing member, langsung dari kantong ketua team!</p>
+                </div>
+            </div>
+
+            <!-- Rules Box -->
+            <div class="info-box">
+                <h4 class="box-title gaming-font" style="color: var(--neon-gold);"><i class="fas fa-scroll"></i> Rules XZenos</h4>
+                <div class="info-text">
+                    <ul class="rules-list">
+                        <li><span class="highlight">Solidaritas nomor satu.</span> Wajib kerja sama, kita main sebagai team, bukan solo player.</li>
+                        <li>Saling bantu & berbagi antar member kalau ada yang lagi butuh resource atau bantuan.</li>
+                        <li><span class="highlight">Uang Kas.</span> Tiap minggu wajib bayar iuran 10k money ke team. <br><span style="font-size: 0.85rem; color: var(--text-muted);">(Kalau belum tau cara transfer/bayarnya, langsung tanya aja ke owner).</span></li>
+                    </ul>
+                    <p style="text-align: center; font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; margin-top: 20px; color: white;">
+                        "Let's grow together and rule the server!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tombol Join -->
+            <a href="https://chat.whatsapp.com/EYIKTc2P30rF8rxVNnah4E?s=cl&p=a&ilr=2" target="_blank" class="btn-join-team">
+                <i class="fab fa-whatsapp"></i> GABUNG TEAM XZENOS
+            </a>
+
+        </div>
+    </div>
+
+    <!-- CARA MENAMBAH DETAIL TEAM BARU (CONTOH) :
+    Jika kamu mengaktifkan kartu Team Baru di atas, kamu JUGA HARUS meng-copy seluruh blok 
+    <div id="detail-xzenos"> ... sampai ... </div> 
+    Lalu paste di sini. 
+    Ubah id="detail-xzenos" menjadi id="detail-teambaru".
+    Lalu ubah semua teks di dalamnya sesuai team tersebut.
+    -->
+
+
+    <!-- =========================================
+         JAVASCRIPT LOGIC
+    ========================================= -->
+    <script>
+        // Fungsi untuk membuka halaman detail team (Menggeser dari kanan)
+        function bukaTeam(idElement) {
+            const elemenTeam = document.getElementById(idElement);
+            if(elemenTeam) {
+                elemenTeam.classList.add('active');
+                // Nonaktifkan scroll pada halaman utama agar tidak tumpang tindih
+                document.body.style.overflow = 'hidden'; 
+            } else {
+                alert("Halaman team belum dibuat/error!");
+            }
+        }
+
+        // Fungsi untuk menutup halaman detail team
+        function tutupTeam(idElement) {
+            const elemenTeam = document.getElementById(idElement);
+            if(elemenTeam) {
+                elemenTeam.classList.remove('active');
+                // Kembalikan fungsi scroll pada halaman utama
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>
